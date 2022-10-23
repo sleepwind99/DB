@@ -1,4 +1,2 @@
-select s."NAME"
-from myschema.students s 
-
+select * from myschema.course
 
