@@ -78,20 +78,20 @@ def registration(CONNECTION: str, course_id: int, student_id: str) -> Union[list
     where s."STUDENT_ID" = %s and c."COURSE_ID" = %s
     """
     insert = """insert into myschema.course_registration("COURSE_ID", "STUDENT_ID") VALUES (%s, %s)"""
+    flag = [True, True]
     with psycopg.connect(CONNECTION) as conn:
-
         with conn.cursor() as cur:
             cur.execute(searchS, (student_id, ))
             data = cur.fetchall()
-            if data == []: 
-                print("Not Exist student with STUDENT ID: " + student_id)
-                return 
-    
+            if data == []: flag[0] = False
+
             cur.execute(searchC, (course_id, ))
             data = cur.fetchall()
-            if data == [] : 
-                print("Not Exist course with COURSE ID : " + course_id)
-                return
+            if data == [] : flag[1] = False
+
+            if(not flag[0]) : print("Not Exist student with STUDENT ID : " + student_id)
+            if(not flag[1]) : print("Not Exist course with COURSE ID : " + course_id)
+            if(not flag[0] or not flag[1]) : return
 
             cur.execute(searchA, (student_id, course_id))
             data = cur.fetchall()
@@ -118,20 +118,21 @@ def withdrawal_registration(CONNECTION: str, course_id: int, student_id: str) ->
     studentName = """select s."NAME" from myschema.students s where s."STUDENT_ID" = %s"""
     courseName = """select c."COURSE_NAME" from myschema.course c where c."COURSE_ID" = %s"""
     delete = """delete from myschema.course_registration where "COURSE_ID" = %s and "STUDENT_ID" = %s"""
-    
+    flag = [True, True]
+
     with psycopg.connect(CONNECTION) as conn:
         with conn.cursor() as cur:
             cur.execute(searchS, (student_id, ))
             data = cur.fetchall()
-            if data == []: 
-                print("Not Exist student with STUDENT ID: " + student_id)
-                return 
+            if data == []: flag[0] = False
     
             cur.execute(searchC, (course_id, ))
             data = cur.fetchall()
-            if data == [] : 
-                print("Not Exist course with COURSE ID : " + course_id)
-                return
+            if data == [] : flag[1] = False
+
+            if(not flag[0]) : print("Not Exist student with STUDENT ID : " + student_id)
+            if(not flag[1]) : print("Not Exist course with COURSE ID : " + course_id)
+            if(not flag[0] or not flag[1]) : return
 
             cur.execute(searchA, (student_id, course_id))
             data = cur.fetchall()
@@ -153,20 +154,22 @@ def modify_lectureroom(CONNECTION: str, course_id: int, buildno: str, roomno: st
     searchC = """select * from myschema.course c where c."COURSE_ID" = %s"""
     searchB = """select * from myschema.lectureroom l where l."BUILDNO" = %s and "ROOMNO" = %s"""
     update = """update myschema.course set "BUILDNO" = %s, "ROOMNO" = %s where "COURSE_ID" = %s"""
+    flag = [True, True]
 
     with psycopg.connect(CONNECTION) as conn:
         with conn.cursor() as cur:    
             cur.execute(searchC, (course_id, ))
             data = cur.fetchall()
-            if data == [] : 
-                print("Not Exist course with COURSE ID : " + course_id)
-                return
+            if data == [] : flag[0] = False
 
             cur.execute(searchB, (buildno, roomno))
             data = cur.fetchall()
-            if data == [] :
-                print("Not Exist lecture room with BUILD NO: " + buildno + " / ROOM NO: " + roomno)
-                return
+            if data == [] : flag[1] = False
+
+            if(not flag[0]) : print("Not Exist course with COURSE ID : " + course_id)
+            if(not flag[1]) : print("Not Exist lecture room with BUILD NO: " + buildno + " / ROOM NO: " + roomno)
+            if(not flag[0] or not flag[1]) : return
+
             cur.execute(update, (buildno, roomno, course_id))
             cur.execute("""select * from myschema.course""")
             data = cur.fetchall()
