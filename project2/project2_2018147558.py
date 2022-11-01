@@ -29,14 +29,14 @@ query = {
   'p6' : """delete from myschema.course_registration where "COURSE_ID" = %s and "STUDENT_ID" = %s""",
   'p7' : """update myschema.course set "BUILDNO" = %s, "ROOMNO" = %s where "COURSE_ID" = %s""",
   'searchB' : """select * from myschema.lectureroom l where l."BUILDNO" = %s and "ROOMNO" = %s""",
-  'searchS' : """select s."NAME" from myschema.students s where s."STUDENT_ID" = %s""",
-  'searchC' : """select c."COURSE_NAME" from myschema.course c where c."COURSE_ID" = %s""",
+  'searchS' : """select s."NAME" from myschema.students s where s."STUDENT_ID" = %s and s."GRADE" != 0""",
+  'searchC' : """select c."COURSE_NAME" from myschema.course c where c."COURSE_ID" = %s and c."YEAR" = 2022 and c."SEMESTER" = 2""",
   'searchA' : """
     select s."NAME", c."COURSE_NAME"
     from myschema.students s 
       join myschema.course_registration cr on s."STUDENT_ID" = cr."STUDENT_ID"
       join myschema.course c on cr."COURSE_ID" = c."COURSE_ID"
-    where s."STUDENT_ID" = %s and c."COURSE_ID" = %s
+    where s."STUDENT_ID" = %s and c."COURSE_ID" = %s and c."YEAR" = 2022 and c."SEMESTER" = 2
   """
 }
 
@@ -103,7 +103,7 @@ def registration(CONNECTION: str, course_id: int, student_id: str) -> Union[list
             cur.execute(query['searchA'], (student_id, course_id))
             data = cur.fetchall()
             if data != [] : 
-                print(data[0][0] + "is already registrated in " + data[0][1])
+                print(data[0][0] + " is already registrated in " + data[0][1])
                 return
             cur.execute(query['p5'], (course_id, student_id))
             cur.execute("""select * from myschema.course_registration""")
