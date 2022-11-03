@@ -23,7 +23,7 @@ query = {
       join myschema.grade g on s."STUDENT_ID" = g."STUDENT_ID"
       join myschema.course c on c."COURSE_ID" = g."COURSE_ID"
       join myschema.faculty f on f."ID" = c."PROF_ID"
-    where s."STUDENT_ID" = %s
+    where s."STUDENT_ID" = %s and not (c."YEAR" = 2022 and c."SEMESTER" = 2)
   """,
   'p5' : """insert into myschema.course_registration("COURSE_ID", "STUDENT_ID") VALUES (%s, %s)""",
   'p6' : """delete from myschema.course_registration where "COURSE_ID" = %s and "STUDENT_ID" = %s""",
